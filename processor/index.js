@@ -2,8 +2,8 @@ const {fileChecker,fileRenamer,directoryReader} = require('../services');
 const {commander,logger} = require('../utils');
 
 const processor = async ()=>{
-    const log = logger();
     const {extension,path} = commander();
+    const log = logger(path);
     log.info(`initating process `);
     log.info(`directory path is ${path}`);
     log.info(`changing every file to ${extension} extension`);

@@ -3,22 +3,21 @@ const config = require('config');
 const prettyStream = require('bunyan-prettystream');
 
 const prettyStdOut = new prettyStream();
-const prettyStdErr = new prettyStream();
 prettyStdOut.pipe(process.stdout);
-prettyStdErr.pipe(process.stderr);
 
 
-const init = ()=>{
+const init = (dirPath)=>{
+    console.log(__dirname,__filename);
     const logger = bunyan.createLogger({
         name:config.get('name'),
         streams:[
             {
                 level:'info',
-                stream:prettyStdOut,
+                path:'./logs/info.log',
             },
             {
                 level:'error',
-                stream:prettyStdErr
+                path:'./logs/error.log'
             },
             {
                 level:'debug',
