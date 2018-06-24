@@ -1,0 +1,18 @@
+{
+  "name": "file-extension-changer",
+  "version": "1.0.0",
+  "description": "change the extension of file ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "anakshiant",
+  "license": "ISC",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "bunyan-prettystream": "^0.1.3",
+    "commander": "^2.15.1",
+    "config": "^1.30.0",
+    "path": "^0.12.7"
+  }
+}
