@@ -1,22 +1,56 @@
-const {fileChecker,fileRenamer,directoryReader} = require('../services');
-const {commander,logger} = require('../utils');
+const { fileChecker, fileRenamer, directoryReader, extensionChanger } = require('../services');
 
-const processor = async ()=>{
-    const {extension,path} = commander();
-    const log = logger(path);
+
+let argument = {
+    isDir:false,
+    dirpath:"",
+    extension:"",
+    filename:"",
+};
+
+
+const processor = async ({extension,path,log}) => {
+    log.info(`==============================================================`);
     log.info(`initating process `);
+    setImmediate(()=>{
+        log.info("ending program");
+        log.info("=================================================================");
+    });
+    if(!(extension || path)){
+        log.info("Information is not complete");
+        return;
+    }
     log.info(`directory path is ${path}`);
     log.info(`changing every file to ${extension} extension`);
+
+    try {
+        const fileNames = await directoryReader(path);
+        const promise_map = fileNames.map((element)=>{
+            return _processor_helper(path,extension,element);
+        });
+        
+        promise_map.reduce((accumlater, currentvalue) => {
+            log.info("okkkk");
+            let result = Promise.resolve(currentvalue);
+            accumlater.push(result)
+            return accumlater;   
+        },[]);
+
+    }
+    catch (err) {
+        log.info(`caught this error while moving ahead`);
+        log.info(err);
+    }    
+}
+
+const _processor_helper = async (path,extension,currentvalue)=>{
     
-    const fileNames = await directoryReader(path);
-
-    fileNames.reduce(async (accumlater,currentvalue)=>{
-        const checkFileResult = await fileChecker(path,currentvalue);
-        if(!checkFileResult)
-            log.info('current file is directory');
-        log.info(`changing extension of file ${currentvalue}`);        
-    });
-
+    const checkFileResult = await fileChecker(path,currentvalue);
+    if (!checkFileResult){
+        return;
+    }
+    const newFileName = extensionChanger(currentvalue, extension);
+    await fileRenamer(path, currentvalue, newFileName);
 }
 
 

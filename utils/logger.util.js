@@ -6,8 +6,7 @@ const prettyStdOut = new prettyStream();
 prettyStdOut.pipe(process.stdout);
 
 
-const init = (dirPath)=>{
-    console.log(__dirname,__filename);
+const init = ()=>{
     const logger = bunyan.createLogger({
         name:config.get('name'),
         streams:[
