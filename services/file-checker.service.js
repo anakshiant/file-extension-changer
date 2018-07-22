@@ -9,7 +9,7 @@ module.exports = async function(argument){
     const filePath = path.join(dirpath,filename);
     try{
         const stat = await stats(filePath);
-        argument.isDir = stat.isFile() ? true:false;
+        argument.isDir = stat.isFile() ? false:true;
         return argument;
     }catch(err){
         throw err;

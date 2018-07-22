@@ -2,22 +2,22 @@ const { fileChecker, fileRenamer, directoryReader } = require('../services');
 
 
 let argument = {
-    isDir:false,
-    dirpath:"",
-    extension:"",
-    filename:"",
-    newFileName:""
+    isDir: false,
+    dirpath: "",
+    extension: "",
+    filename: "",
+    newFileName: ""
 };
 
 
-const processor = async ({extension,path,log}) => {
+const processor = async ({ extension, path, log }) => {
     log.info(`==============================================================`);
     log.info(`initating process `);
-    setImmediate(()=>{
+    setImmediate(() => {
         log.info("ending program");
         log.info("=================================================================");
     });
-    if(!(extension || path)){
+    if (!(extension || path)) {
         log.info("Information is not complete");
         return;
     }
@@ -26,36 +26,29 @@ const processor = async ({extension,path,log}) => {
 
     try {
         const fileNames = await directoryReader(path);
-
-        const promise_map = fileNames.map((element)=>{
-            const arg = Object.assign(argument,{dirpath:path,extension:extension,filename:element});
-            return _processor_helper(argument);
-        });
-        
-        promise_map.reduce((accumlater, currentvalue) => {
-            log.info("okkkk");
-            let result = Promise.resolve(currentvalue);
-            accumlater.push(result)
-            return accumlater;   
-        },[]);
+        let results = [];
+        for (let filename of fileNames) {
+            const arg = Object.assign(argument, { dirpath: path, extension: extension, filename: filename });
+            const result = await _connect_all(arg)([fileChecker,fileRenamer]);
+            results.push(result);
+        }
 
     }
     catch (err) {
         log.info(`caught this error while moving ahead`);
         log.info(err);
-    }    
+    }
 }
 
-const _processor_helper = async (argument)=>{
-    return await _connect_all(argument)([fileChecker,fileRenamer]);
-}
 
-const _connect_all =  (arguemnt)=>{
-    return async function(transformers){
-        transformers.reduce(async (accum,curr)=>{
-            const result = await curr(accum);
-            return Object.assign(accum,result);
-        },arguemnt);
+
+const _connect_all = (arguemnt) => {
+    return async function (transformers) {
+        return transformers.reduce(async (accum, curr) => {
+            let argumentResolved = await accum;
+            let result = await curr(argumentResolved);
+            return result;
+        }, Promise.resolve(arguemnt));
     };
 }
 
