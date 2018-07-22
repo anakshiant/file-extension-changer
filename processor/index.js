@@ -1,4 +1,4 @@
-const { fileChecker, fileRenamer, directoryReader, extensionChanger } = require('../services');
+const { fileChecker, fileRenamer, directoryReader } = require('../services');
 
 
 let argument = {
@@ -6,6 +6,7 @@ let argument = {
     dirpath:"",
     extension:"",
     filename:"",
+    newFileName:""
 };
 
 
@@ -25,8 +26,10 @@ const processor = async ({extension,path,log}) => {
 
     try {
         const fileNames = await directoryReader(path);
+
         const promise_map = fileNames.map((element)=>{
-            return _processor_helper(path,extension,element);
+            const arg = Object.assign(argument,{dirpath:path,extension:extension,filename:element});
+            return _processor_helper(argument);
         });
         
         promise_map.reduce((accumlater, currentvalue) => {
@@ -43,14 +46,17 @@ const processor = async ({extension,path,log}) => {
     }    
 }
 
-const _processor_helper = async (path,extension,currentvalue)=>{
-    
-    const checkFileResult = await fileChecker(path,currentvalue);
-    if (!checkFileResult){
-        return;
-    }
-    const newFileName = extensionChanger(currentvalue, extension);
-    await fileRenamer(path, currentvalue, newFileName);
+const _processor_helper = async (argument)=>{
+    return await _connect_all(argument)([fileChecker,fileRenamer]);
+}
+
+const _connect_all =  (arguemnt)=>{
+    return async function(transformers){
+        transformers.reduce(async (accum,curr)=>{
+            const result = await curr(accum);
+            return Object.assign(accum,result);
+        },arguemnt);
+    };
 }
 
 

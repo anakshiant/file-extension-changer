@@ -4,12 +4,13 @@ const {promisify} = require('util');
 
 const stats = promisify(fs.stat);
 
-module.exports = async function(dirpath,filename){
+module.exports = async function(argument){
+    const {dirpath,filename} = argument;
     const filePath = path.join(dirpath,filename);
     try{
         const stat = await stats(filePath);
-        const result = stat.isFile() ? true:false;
-        return result;
+        argument.isDir = stat.isFile() ? true:false;
+        return argument;
     }catch(err){
         throw err;
     }
