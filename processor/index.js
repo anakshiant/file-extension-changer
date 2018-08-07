@@ -26,12 +26,10 @@ const processor = async ({ extension, path, log }) => {
 
     try {
         const fileNames = await directoryReader(path);
-        let results = [];
-        for (let filename of fileNames) {
-            const arg = Object.assign(argument, { dirpath: path, extension: extension, filename: filename });
-            const result = await _connect_all(arg)([fileChecker,fileRenamer]);
-            results.push(result);
-        }
+        let result = fileNames.reduce(async (accum,current)=>{
+            const arg = Object.assign(argument, { dirpath: path, extension: extension, filename: current });
+            
+        },{prom:Promise.resolve({}),results:[]});
 
     }
     catch (err) {
