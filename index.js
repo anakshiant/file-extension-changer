@@ -1,5 +1,5 @@
 const { commander, logger } = require('./utils');
-const processor = require("./processor");
+const boot = require("././boot");
 
 // gets the Filename Extension from -e  option in extension
 // gets the Directory Path from -p option in path
@@ -9,4 +9,4 @@ const { extension, path } = commander();
 const log = logger();
 
 //main processing starts here
-processor({extension,path,log});
+boot({extension,path,log});

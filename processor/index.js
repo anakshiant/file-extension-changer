@@ -1,5 +1,6 @@
-const { fileChecker, fileRenamer, directoryReader } = require('../services');
-
+const directoryReader = require('./directory-reader.service');
+const fileChecker = require("./file-checker.service");
+const fileRenamer = require("./file-renamer.service");
 
 let argument = {
     isDir: false,
@@ -9,35 +10,10 @@ let argument = {
     newFileName: ""
 };
 
-
-const processor = async ({ extension, path, log }) => {
-    log.info(`==============================================================`);
-    log.info(`initating process `);
-    setImmediate(() => {
-        log.info("ending program");
-        log.info("=================================================================");
-    });
-    if (!(extension || path)) {
-        log.info("Information is not complete");
-        return;
-    }
-    log.info(`directory path is ${path}`);
-    log.info(`changing every file to ${extension} extension`);
-
-    try {
-        const fileNames = await directoryReader(path);
-        let result = fileNames.reduce(async (accum,current)=>{
-            const arg = Object.assign(argument, { dirpath: path, extension: extension, filename: current });
-            
-        },{prom:Promise.resolve({}),results:[]});
-
-    }
-    catch (err) {
-        log.info(`caught this error while moving ahead`);
-        log.info(err);
-    }
+module.exports = async function Processor(extension,dirpath){
+    let args = Object.assign({},argument,{extension,dirpath});
+   return await _connect_all(args)([directoryReader,fileChecker,fileRenamer]);
 }
-
 
 
 const _connect_all = (arguemnt) => {
@@ -50,5 +26,3 @@ const _connect_all = (arguemnt) => {
     };
 }
 
-
-module.exports = processor

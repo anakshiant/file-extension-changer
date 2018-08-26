@@ -5,7 +5,18 @@ const {promisify} = require('util');
 const rename = promisify(fs.rename);
  
 // Rename the file cheanges to the new extension if it is a file not a directory
-module.exports = async function(argument){
+module.exports = async function(arguments){
+    let args = [];
+    for(let argument of arguments){
+        let arg = await _processRename(argument);
+        args.push(arg);
+    }
+    return args;
+}
+
+
+
+async function _processRename(argument){
     try{
         const {dirpath,filename,extension,isDir} = argument;
         if(isDir)
@@ -25,7 +36,6 @@ module.exports = async function(argument){
         throw err;
     }
 }
-
 
 
 
